@@ -3,7 +3,11 @@ package com.tomspencerlondon.client;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import com.tomspencerlondon.model.Speaker;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import java.util.List;
 
 public class SpeakerClient {
     private Client client;
@@ -21,12 +25,26 @@ public class SpeakerClient {
                 .get(Speaker.class);
     }
 
+    public List<Speaker> get () {
+        Response response = client.target(SPEAKER_URI)
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        List<Speaker> speakers = response.readEntity(new GenericType<List<Speaker>>(){});
+
+        return speakers;
+    }
+
 
     public static void main(String[] args) {
         SpeakerClient client = new SpeakerClient();
         Speaker speaker = client.get(1L);
 
         System.out.println(speaker.getName());
+
+        List<Speaker> speakers = client.get();
+
+        System.out.println(speakers.size());
     }
 
 }

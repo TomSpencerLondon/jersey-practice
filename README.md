@@ -403,3 +403,8 @@ We can also write a Jersey Client which can be shipped with our project. This ca
 and production worthy. We will first add the dependencies to our pom.xml:
 
 ### Lists of Objects with Jersey
+We use GenericType lists of objects with Jersey response.readEntity():
+```txt
+List<Speakers> speakers = response.readEntity(new GenericType<List<Speaker>>(){});
+```
+
