@@ -1,15 +1,17 @@
 ### Jersey 3 Fundamentals
 
-The Jersey RESTful Web Services, formerly Glassfish Jersey, currently Eclipse Jersey, framework is an open source framework for developing RESTful Web Services in Java.
+The Jersey RESTful Web Services, formerly Glassfish Jersey, currently Eclipse Jersey, framework is an open source
+framework for developing RESTful Web Services in Java.
 This course is good for Jersey 3 fundamentals:
 https://www.pluralsight.com/courses/jersey-3-fundamentals
-
 
 This link is quite useful for background on jersey:
 https://eclipse-ee4j.github.io/jersey.github.io/documentation/3.0.0/index.html
 
 #### Start project
+
 First we check our java and maven versions:
+
 ```bash
 tom@tom-ubuntu:~/Projects$ java -version
 openjdk version "17.0.6" 2023-01-17
@@ -23,7 +25,8 @@ Default locale: en_GB, platform encoding: UTF-8
 OS name: "linux", version: "5.19.0-41-generic", arch: "amd64", family: "unix"
 ```
 
-We can now run the command for generating a 
+We can now run the command for generating a
+
 ```bash
 tom@tom-ubuntu:~/Projects$ mvn archetype:generate -DarchetypeArtifactId=jersey-quickstart-grizzly2 \
 > -DarchetypeGroupId=org.glassfish.jersey.archetypes -DinteractiveMode=false \
@@ -71,6 +74,7 @@ This creates the following folder structure:
 ![image](https://github.com/TomSpencerLondon/LeetCode/assets/27693622/74ea44d7-d34c-40b9-a2a9-3b30833143c4)
 
 We then change the Java version to Java 17:
+
 ```xml
 
 <build>
@@ -103,8 +107,11 @@ We then change the Java version to Java 17:
     </plugins>
 </build>
 ```
+
 The first web service has been written for us:
+
 ```java
+
 @Path("myresource")
 public class MyResource {
 
@@ -123,8 +130,10 @@ public class MyResource {
 ```
 
 We also have a main function which uses grizzly to start a server:
+
 ```java
  */
+
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
     public static final String BASE_URI = "http://localhost:8080/";
@@ -163,3 +172,234 @@ We can view the Jersey service on the grizzly server at localhost:8080/myresourc
 
 ![image](https://github.com/TomSpencerLondon/LeetCode/assets/27693622/b214c2b7-797d-4687-811f-4bbfa1f7e98d)
 
+### RESTful Architecture
+
+REST does not mean adhoc service creation. There are standards for how we create restful services. The Richardson
+Maturity
+Model helps clarify the levels of REST in our applications
+
+![image](https://github.com/TomSpencerLondon/jersey-practice/assets/27693622/6cc502b5-d566-483e-9d5f-517c676250d5)
+
+Level 0 is just xml. Level 0 is focused on one endpoint. Level 1 is focused on objects and urls. Level 2 is focused on
+HTTP verbs.
+GET is used for getting resources. POST for creating resources. We also use HTTP response codes for our navigation.
+Level 3 adds
+HATEOAS or links to help with navigation.
+
+#### HTTP verbs
+
+Create, Read, Update, Delete
+POST, GET, PUT, DELETE
+Level 3 puts the focus on discoverability using HATEOAS.
+
+#### HATEOAS
+
+HATEOAS stands for Hypermedia as the Engine or Application State. The focus is on interacting through hypermedia to
+allow the server
+and the client to be more decoupled. Future actions are determined by the server response. Links are included for what
+the user can
+do with the response. This can help Long Term design. The CRUD functions are synonymous with level 2 of the Richardson
+maturity model.
+
+| Function | Verb   |
+|----------|--------|
+| Create   | POST   |
+| Read     | GET    | 
+| Update   | PUT    |
+| Delete   | DELETE |
+
+### Json
+JavaScript Object Notation is a more performance and easier to use response that is a simpler version of XML.
+JSON is more difficult to validate.
+
+### XML
+XML can be used with REST. XML is easy to validate.
+
+### Binary Output
+Binary is not necessarily an alternative to JSON and XML. Binary is used for files, images and pdfs. Binary is frequently used
+in RESTful services.
+
+#### Using GET to Retrieve Entities
+We will create:
+- Speaker
+- SpeakerRepository
+- SpeakerResource
+  - We will annotate the service with GET
+- http://localhost:8080/speaker
+
+We add an interface for the Repository and extract an interface:
+```java
+public class SpeakerRepositoryStub implements SpeakerRepository {
+
+    @Override
+    public List<Speaker> findAll() {
+        List<Speaker> speakers = new ArrayList<>();
+
+        Speaker speaker1 = new Speaker();
+        speaker1.setId(1L);
+        speaker1.setName("Bryan");
+        speaker1.setCompany("Pluralsight");
+        speakers.add(speaker1);
+
+        Speaker speaker2 = new Speaker();
+        speaker2.setId(2L);
+        speaker2.setName("Roger");
+        speaker2.setCompany("Wilco");
+        speakers.add(speaker2);
+
+        return speakers;
+    }
+}
+```
+and this is the interface:
+```java
+public interface SpeakerRepository {
+    List<Speaker> findAll();
+}
+
+```
+
+We add the glassfish dependency for the json response:
+```xml
+
+<dependency>
+  <groupId>org.glassfish.jersey.media</groupId>
+  <artifactId>jersey-media-json-binding</artifactId>
+</dependency>
+```
+We now get a response when we go to localhost:8080/speaker:
+![image](https://github.com/TomSpencerLondon/LeetCode/assets/27693622/cd81b9fa-c463-4257-82bd-3c30eadfd489)
+
+We can also get single speakers:
+```text
+@Path("{id}")
+@PathParam("id")
+```
+We will write a lambda function to extract the speaker. The url will look like this:
+http://localhost:8080/speaker/1
+
+```java
+@Path("speaker")
+public class SpeakerResource {
+
+    private SpeakerRepository speakerRepository = new SpeakerRepositoryStub();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Speaker> findAll() {
+        return speakerRepository.findAll();
+    }
+
+    @Path("{id}")
+    @GET
+    public Speaker getSpeaker(@PathParam("id") Long id) {
+        return speakerRepository.findById(id);
+    }
+}
+```
+
+We also refactor the StubSpeakerRepository:
+```java
+
+public class SpeakerRepositoryStub implements SpeakerRepository {
+
+    private final List<Speaker> speakers = new ArrayList<>();
+
+    public SpeakerRepositoryStub() {
+        Speaker speaker1 = new Speaker();
+        speaker1.setId(1L);
+        speaker1.setName("Bryan");
+        speaker1.setCompany("Pluralsight");
+        speakers.add(speaker1);
+
+        Speaker speaker2 = new Speaker();
+        speaker2.setId(2L);
+        speaker2.setName("Roger");
+        speaker2.setCompany("Wilco");
+        speakers.add(speaker2);
+    }
+
+    @Override
+    public List<Speaker> findAll() {
+        return speakers;
+    }
+
+    @Override
+    public Speaker findById(Long id) {
+        return findSpeakerById(speakers, id);
+    }
+
+    private Speaker findSpeakerById(List<Speaker> speakers, Long id) {
+        return speakers
+                .stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst()
+                .orElseThrow(UnsupportedOperationException::new);
+    }
+}
+```
+
+#### Using POST to Create Entities
+We use POST to create objects in our application:
+```java
+@Path("speaker")
+public class SpeakerResource {
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Speaker createSpeakerWithParams(MultivaluedMap<String, String> formParams) {
+    System.out.println(formParams.getFirst("name"));
+    System.out.println(formParams.getFirst("company"));
+
+    return null;
+  }
+}
+```
+We will create a POST method in our SpeakerResource. We will use a curl command to test our POST method. We can test the POST with:
+```bash
+tom@tom-ubuntu:~/Projects/conference-service$ curl -d "name=steve&company=ACME" -X POST http://localhost:8080/speaker
+```
+We see the following in the run logs:
+```bash
+Jersey app started with endpoints available at http://localhost:8080/
+Hit Ctrl-C to stop it...
+steve
+ACME
+
+```
+
+We can add another function to our resource:
+```java
+@Path("speaker")
+public class SpeakerResource {
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Speaker createSpeaker(Speaker speaker) {
+        System.out.println(speaker.getName());
+
+        speaker = speakerRepository.create(speaker);
+        return speaker;
+    }
+}
+```
+We can test the function with:
+
+```bash
+tom@tom-ubuntu:~/Projects/conference-service$ curl -w "\n" -d '{"name": "Steve", "company": "ACME"}' -H "Content-Type:application/json" -X POST http://localhost:8080/speaker
+{"company":"ACME","id":6,"name":"Steve"}
+```
+
+### Building a RESTful Client in Jersey
+
+We can use the Postman client to test our API
+
+![image](https://github.com/TomSpencerLondon/DropWizard-Course/assets/27693622/7c9de442-0aa1-4a1c-8a28-3f696a066632)
+
+We can also test the POST function:
+![image](https://github.com/TomSpencerLondon/DropWizard-Course/assets/27693622/cf154da6-1747-4ef6-9d3d-54a4975c31d7)
+
+We can also write a Jersey Client which can be shipped with our project. This can show the intended use. It is repeatable
+and production worthy. We will first add the dependencies to our pom.xml:
+
+### Lists of Objects with Jersey
