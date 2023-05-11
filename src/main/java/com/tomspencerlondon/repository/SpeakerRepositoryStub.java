@@ -81,6 +81,7 @@ public class SpeakerRepositoryStub implements SpeakerRepository {
 
     @Override
     public List<Speaker> findByConstraints(SpeakerSearch speakerSearch) {
+        System.out.println(speakerSearch.getSearchType());
         List<Speaker> result = new ArrayList<>();
 
         for (Speaker speaker : speakers) {
