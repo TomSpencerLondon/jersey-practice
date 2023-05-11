@@ -18,18 +18,19 @@ public class SpeakerSearchClient {
         client = ClientBuilder.newClient();
     }
 
-    public List<Speaker> search(String param, List<String> searchValues) {
+    public List<Speaker> search(String param, List<String> searchValues, String ageFrom, int ageFromVal, String ageTo, int ageToVal) {
         return client
                 .target(SPEAKER_SEARCH_URI)
                 .queryParam(param, searchValues)
+                .queryParam(ageFrom, ageFromVal)
+                .queryParam(ageTo, ageToVal)
                 .request(MediaType.APPLICATION_JSON)
                 .get(new GenericType<List<Speaker>>(){});
     }
 
     public static void main(String[] args) {
         SpeakerSearchClient client = new SpeakerSearchClient();
-        List<Speaker> results = client.search("company", Arrays.asList("Deloitte", "Pluralsite"));
-
+        List<Speaker> results = client.search("company", Arrays.asList("Deloitte", "Pluralsite"), "ageFrom", 20, "ageTo", 80);
         System.out.println(results.size());
     }
 }

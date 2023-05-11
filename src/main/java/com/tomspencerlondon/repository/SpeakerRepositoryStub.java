@@ -4,7 +4,6 @@ import com.tomspencerlondon.model.Speaker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class SpeakerRepositoryStub implements SpeakerRepository {
 
@@ -65,7 +64,9 @@ public class SpeakerRepositoryStub implements SpeakerRepository {
     }
 
     @Override
-    public List<Speaker> findByCompany(List<String> companies) {
+    public List<Speaker> findByCompany(List<String> companies, int ageFromVal, int ageToVal) {
+        // select * from speakers where company in [?,?] and age > ? and age < ?
+
         List<Speaker> result = new ArrayList<>();
 
         for (Speaker speaker : speakers) {

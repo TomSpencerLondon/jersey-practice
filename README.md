@@ -527,3 +527,57 @@ We will create a basic search with:
 - Query Params
 
 First we will create the SpeakerSearchClient:
+```java
+public class SpeakerSearchClient {
+
+    private Client client;
+    private final String SPEAKER_SEARCH_URI = "http://localhost:8080/search/speaker";
+
+    public SpeakerSearchClient() {
+        client = ClientBuilder.newClient();
+    }
+
+    public List<Speaker> search(String param, List<String> searchValues) {
+        return client
+                .target(SPEAKER_SEARCH_URI)
+                .queryParam(param, searchValues)
+                .request(MediaType.APPLICATION_JSON)
+                .get(new GenericType<List<Speaker>>(){});
+    }
+
+    public static void main(String[] args) {
+        SpeakerSearchClient client = new SpeakerSearchClient();
+        List<Speaker> results = client.search("company", Arrays.asList("Deloitte", "Pluralsite"));
+        System.out.println(results.size());
+    }
+}
+```
+
+and the search resource:
+```java
+@Path("search/speaker")
+public class SpeakerSearchResource {
+
+    private SpeakerRepository speakerRepository = new SpeakerRepositoryStub();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchForSpeakers(@QueryParam(value = "company") List<String> companies) {
+        List<Speaker> speakers = speakerRepository.findByCompany(queryParams(companies.get(0)));
+
+        if (speakers == null || speakers.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok()
+                .entity(new GenericEntity<List<Speaker>>(speakers){})
+                .build();
+    }
+
+    private static List<String> queryParams(String searchValues) {
+        return Arrays.asList(searchValues.substring(1, searchValues.length() - 1).split(", "));
+    }
+}
+```
+
+### Search by Range

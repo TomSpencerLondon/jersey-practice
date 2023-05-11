@@ -15,5 +15,5 @@ public interface SpeakerRepository {
 
     void delete(Long id);
 
-    List<Speaker> findByCompany(List<String> companies);
+    List<Speaker> findByCompany(List<String> companies, int ageFromVal, int ageToVal);
 }
