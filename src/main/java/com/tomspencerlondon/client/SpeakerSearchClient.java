@@ -28,6 +28,8 @@ public class SpeakerSearchClient {
 
     public static void main(String[] args) {
         SpeakerSearchClient client = new SpeakerSearchClient();
-        List<Speaker> results = client.search("company", Arrays.asList("pluralsight", "school"));
+        List<Speaker> results = client.search("company", Arrays.asList("Deloitte", "Pluralsite"));
+
+        System.out.println(results.size());
     }
 }

@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Path("search/speaker")
@@ -18,14 +19,18 @@ public class SpeakerSearchResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchForSpeakers(@QueryParam(value = "company") List<String> companies) {
-        List<Speaker> speakers = speakerRepository.findByCompany(companies);
+        List<Speaker> speakers = speakerRepository.findByCompany(queryParams(companies.get(0)));
 
-        if (speakers == null || speakers.size() <= 0) {
+        if (speakers == null || speakers.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         return Response.ok()
                 .entity(new GenericEntity<List<Speaker>>(speakers){})
                 .build();
+    }
+
+    private static List<String> queryParams(String searchValues) {
+        return Arrays.asList(searchValues.substring(1, searchValues.length() - 1).split(", "));
     }
 }

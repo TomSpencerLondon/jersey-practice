@@ -4,6 +4,7 @@ import com.tomspencerlondon.model.Speaker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SpeakerRepositoryStub implements SpeakerRepository {
 
@@ -13,7 +14,7 @@ public class SpeakerRepositoryStub implements SpeakerRepository {
         Speaker speaker1 = new Speaker();
         speaker1.setId(1L);
         speaker1.setName("Bryan");
-        speaker1.setCompany("Pluralsight");
+        speaker1.setCompany("Pluralsite");
         speakers.add(speaker1);
 
         Speaker speaker2 = new Speaker();
@@ -21,6 +22,12 @@ public class SpeakerRepositoryStub implements SpeakerRepository {
         speaker2.setName("Roger");
         speaker2.setCompany("Wilco");
         speakers.add(speaker2);
+
+        Speaker speaker3 = new Speaker();
+        speaker3.setId(3L);
+        speaker3.setName("Harry");
+        speaker3.setCompany("Deloitte");
+        speakers.add(speaker3);
     }
 
     @Override
@@ -59,10 +66,15 @@ public class SpeakerRepositoryStub implements SpeakerRepository {
 
     @Override
     public List<Speaker> findByCompany(List<String> companies) {
-        return speakers
-                .stream()
-                .filter(s -> companies.contains(s.getCompany()))
-                .toList();
+        List<Speaker> result = new ArrayList<>();
+
+        for (Speaker speaker : speakers) {
+            if (companies.contains(speaker.getCompany())) {
+                result.add(speaker);
+            }
+        }
+
+        return result;
     }
 
     private Speaker findSpeakerById(List<Speaker> speakers, Long id) {
