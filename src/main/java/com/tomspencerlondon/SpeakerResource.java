@@ -44,4 +44,13 @@ public class SpeakerResource {
         speaker = speakerRepository.create(speaker);
         return speaker;
     }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Speaker updateSpeaker(Speaker speaker) {
+        speaker = speakerRepository.update(speaker);
+
+        return speaker;
+    }
 }

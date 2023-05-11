@@ -408,3 +408,81 @@ We use GenericType lists of objects with Jersey response.readEntity():
 List<Speakers> speakers = response.readEntity(new GenericType<List<Speaker>>(){});
 ```
 
+We can use this in our SpeakerClient:
+```java
+public class SpeakerClient {
+    private Client client;
+    private final String SPEAKER_URI = "http://localhost:8080/speaker";
+
+    public SpeakerClient() {
+        client = ClientBuilder.newClient();
+    }
+
+
+    public Speaker get(Long l) {
+        return client.target(SPEAKER_URI)
+                .path(String.valueOf(l))
+                .request(MediaType.APPLICATION_JSON)
+                .get(Speaker.class);
+    }
+
+    public List<Speaker> get () {
+        Response response = client.target(SPEAKER_URI)
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        List<Speaker> speakers = response.readEntity(new GenericType<List<Speaker>>(){});
+
+        return speakers;
+    }
+
+    public Speaker post (Speaker speaker) {
+        return client.target(SPEAKER_URI)
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(speaker, MediaType.APPLICATION_JSON))
+                .readEntity(Speaker.class);
+    }
+
+
+    public static void main(String[] args) {
+        SpeakerClient client = new SpeakerClient();
+        Speaker speaker = client.get(1L);
+
+        System.out.println(speaker.getName());
+
+        List<Speaker> speakers = client.get();
+
+        System.out.println(speakers.size());
+
+        speaker = new Speaker();
+        speaker.setName("Alex");
+        speaker.setCompany("School");
+        speaker = client.post(speaker);
+
+        System.out.println(speaker.getId());
+    }
+
+}
+```
+
+### Using PUT to Update Entities
+PUTs are used to update records. They are very similar to POST:
+
+```java
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+
+@Path("speaker")
+public class SpeakerResource {
+
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Speaker updateSpeaker(Speaker speaker) {
+      speaker = speakerRepository.update(speaker);
+      
+      return speaker;
+  }
+}
+```
+

@@ -10,4 +10,6 @@ public interface SpeakerRepository {
     Speaker findById(Long id);
 
     Speaker create(Speaker speaker);
+
+    Speaker update(Speaker speaker);
 }

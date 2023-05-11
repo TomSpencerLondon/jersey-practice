@@ -3,6 +3,7 @@ package com.tomspencerlondon.client;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import com.tomspencerlondon.model.Speaker;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -35,6 +36,13 @@ public class SpeakerClient {
         return speakers;
     }
 
+    public Speaker post (Speaker speaker) {
+        return client.target(SPEAKER_URI)
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(speaker, MediaType.APPLICATION_JSON))
+                .readEntity(Speaker.class);
+    }
+
 
     public static void main(String[] args) {
         SpeakerClient client = new SpeakerClient();
@@ -45,6 +53,13 @@ public class SpeakerClient {
         List<Speaker> speakers = client.get();
 
         System.out.println(speakers.size());
+
+        speaker = new Speaker();
+        speaker.setName("Alex");
+        speaker.setCompany("School");
+        speaker = client.post(speaker);
+
+        System.out.println(speaker.getId());
     }
 
 }
