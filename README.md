@@ -485,4 +485,27 @@ public class SpeakerResource {
   }
 }
 ```
+![image](https://github.com/TomSpencerLondon/DropWizard-Course/assets/27693622/21c9f4c1-bd3c-44c3-b260-3d049276e207)
+
+### Using DELETE to delete entities
+DELETE looks like get by Id and POST combined:
+
+```java
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+
+@Path("speaker")
+public class SpeakerResource {
+
+  @Path("{id}")
+  @DELETE
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public void deleteSpeaker(@PathParam("id") Long id) {
+    speakerRepository.delete(id);
+  }
+}
+```
 
