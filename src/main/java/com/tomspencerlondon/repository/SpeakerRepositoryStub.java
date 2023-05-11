@@ -1,6 +1,7 @@
 package com.tomspencerlondon.repository;
 
 import com.tomspencerlondon.model.Speaker;
+import com.tomspencerlondon.model.SpeakerSearch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,19 @@ public class SpeakerRepositoryStub implements SpeakerRepository {
 
         for (Speaker speaker : speakers) {
             if (companies.contains(speaker.getCompany())) {
+                result.add(speaker);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Speaker> findByConstraints(SpeakerSearch speakerSearch) {
+        List<Speaker> result = new ArrayList<>();
+
+        for (Speaker speaker : speakers) {
+            if (speakerSearch.getCompanies().contains(speaker.getCompany())) {
                 result.add(speaker);
             }
         }

@@ -1,6 +1,7 @@
 package com.tomspencerlondon;
 
 import com.tomspencerlondon.model.Speaker;
+import com.tomspencerlondon.model.SpeakerSearch;
 import com.tomspencerlondon.repository.SpeakerRepository;
 import com.tomspencerlondon.repository.SpeakerRepositoryStub;
 import jakarta.ws.rs.*;
@@ -15,6 +16,22 @@ import java.util.List;
 public class SpeakerSearchResource {
 
     private SpeakerRepository speakerRepository = new SpeakerRepositoryStub();
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response search(SpeakerSearch speakerSearch) {
+        List<Speaker> speakers = speakerRepository.findByConstraints(speakerSearch);
+
+        if (speakers == null || speakers.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok()
+                .entity(new GenericEntity<List<Speaker>>(speakers){})
+                .build();
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

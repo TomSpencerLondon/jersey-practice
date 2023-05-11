@@ -580,4 +580,6 @@ public class SpeakerSearchResource {
 }
 ```
 
-### Search by Range
+### Search by Object 
+
+

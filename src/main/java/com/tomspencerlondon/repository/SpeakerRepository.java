@@ -1,6 +1,7 @@
 package com.tomspencerlondon.repository;
 
 import com.tomspencerlondon.model.Speaker;
+import com.tomspencerlondon.model.SpeakerSearch;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface SpeakerRepository {
     void delete(Long id);
 
     List<Speaker> findByCompany(List<String> companies, int ageFromVal, int ageToVal);
+
+    List<Speaker> findByConstraints(SpeakerSearch speakerSearch);
 }
