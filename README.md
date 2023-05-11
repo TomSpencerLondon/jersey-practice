@@ -509,3 +509,21 @@ public class SpeakerResource {
 }
 ```
 
+### Building RESTful Searches
+In this section we will look at searching with RESTful services.
+
+#### Search with QueryParams
+These are appended to the URL:
+```text
+GET
+localhost:8080/speaker/search?name=Bryan
+```
+These are cacheable but there is no way to represent constraints. There is no clean way to navigate subdirectories.
+
+#### Basic Search
+We will create a basic search with:
+- Client
+- Search Resource
+- Query Params
+
+First we will create the SpeakerSearchClient:
