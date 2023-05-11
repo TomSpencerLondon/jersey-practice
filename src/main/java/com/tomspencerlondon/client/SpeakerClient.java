@@ -43,6 +43,14 @@ public class SpeakerClient {
                 .readEntity(Speaker.class);
     }
 
+    private Speaker put(Speaker speaker) {
+        return client.target(SPEAKER_URI)
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.entity(speaker, MediaType.APPLICATION_JSON))
+                .readEntity(Speaker.class);
+    }
+
+
 
     public static void main(String[] args) {
         SpeakerClient client = new SpeakerClient();
@@ -60,6 +68,11 @@ public class SpeakerClient {
         speaker = client.post(speaker);
 
         System.out.println(speaker.getId());
-    }
 
+        speaker.setCompany("Wayne Enterprises");
+
+        speaker = client.put(speaker);
+
+        System.out.println(speaker.getCompany());
+    }
 }
